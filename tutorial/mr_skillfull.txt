@@ -1,0 +1,188 @@
+  =========  ==========    =====       ===== 
+  =========  ============  ======     ====== 
+     ===       ===   ====    =====   =====   
+     ===       =========     ====== ======  INSTALLIN'  THAT  SWEET SWEET
+     ===       ========      =============  BIG IRON ON YOUR LINUX LAPTOP
+     ===       =========     =============  OR SERVER  - BY MR. SKILLFULL
+     ===       ===   ====    ===  ===  ===   
+  =========  ============  =====   =   ===== 
+  =========  ==========    =====       ===== 
+
+THE GOOD FOLKS OVER AT THE HERCULES MAILING LIST WILL NEVER SHARE THIS. THATS WHY IVE DECIDED TO PUT TOGETHER INSTRUCTIONS TO INSTALL ZOS ON YOUR DEBIAN MACHINE USING HERCULES. FOR THE PEOPLE. ILL TRY TO MAKE THIS AS EASY AS POSSIBLE BUT YOURE ALL NEW TO ZOS SO IT WILL TAKE SOME TIME. GET A DEBIAN OR UBUNTU SYSTEM SPUN UP BECAUSE THIS GUIDE WILL BE BEST FOLLOWED IN EITHER OF THOSE. 
+
+STEP 1: DOWNLOAD ZOS.
+
+	GET THE "IBM ZOS 1.10" TORRENT: magnet:?xt=urn:btih:653a0697533b42b495c18c0e06222a7b2e9af2c3
+
+STEP 2: WHILE YOU WAIT FOR THE 16GB DOWNLOAD TO FINISH INSTALL GIT REXX C3270 AND BUILD-ESSENTIALS IN DEBIAN
+
+	sudo apt-get install git build-essential libtool automake autoconf libregina3-dev screen c3270
+
+STEP 3: GET HERCULES 4.00 RUNNING
+
+	git clone https://github.com/hercules-390/hyperion.git
+	cd hercules-390
+	./autogen.sh
+	./configure --enable-cckd-bzip2 --enable-regina-rexx
+	make
+	sudo make install
+
+STEP 4: TEST YOUR HERCULES
+
+	/usr/local/bin/hercules
+
+	THEN IN ANOTHER TERMINAL WINDOW
+
+	c3270 localhost:3270
+
+	IT SHOULD LOOK LIKE THIS:
+
+	/=======================================================================\
+	|									|
+	| Hercules Version  : 4.00						|
+	| Host name         : MS						|
+	| Host OS           : DEBIAN						|
+	| Host Architecture : x86						|
+	| Processors        : MP=2						|
+	| LPAR Name         : HERCULES						|
+	| Device number     : 0:001F						|
+	| Subchannel        : 0004						|
+	| 									|
+	| HHH          HHH   The S/370, ESA/390 and z/Architecture		|
+	| HHH          HHH                 Emulator				|
+	| HHH          HHH							|
+	| HHH          HHH  EEEE RRR   CCC U  U L    EEEE  SSS			|
+	| HHHHHHHHHHHHHHHH  E    R  R C    U  U L    E    S			|
+	| HHHHHHHHHHHHHHHH  EEE  RRR  C    U  U L    EEE   SS			|
+	| HHHHHHHHHHHHHHHH  E    R R  C    U  U L    E       S			|
+	| HHH          HHH  EEEE R  R  CCC  UU  LLLL EEEE SSS			|
+	| HHH          HHH							|
+	| HHH          HHH							|
+	| HHH          HHH     My PC thinks it's a MAINFRAME			|
+	| 									|
+	| Copyright (c) 1999-2011 Roger Bowler, Jan Jaeger, and others		|
+	|									|
+	\=======================================================================/
+
+
+	TO EXIT THE CONSOLE USE CTRL-] AND TYPE 'quit'
+
+STEP 5: ONCE THE DOWNLOAD IS DONE MAKE THE FOLLOWING CHANGES:
+	
+	COPY THE FOLDER "ZOS 110 Copy" in "IBM ZOS 1.10/Z110SA/images/" TO YOUR HOME FOLDER AND RENAME IT TO "MAINFRAME"
+	MAKE A DIRECTORY CALLED PRTR IN THE "MAINFRAME" DIRECTORY. YOU SHOULD NOW HAVE THREE FOLDERS: CONF, DASD AND PRTR
+	EDIT THE FILE "MAINFRAME/CONF/ADCD_LINUX.CONF" AND MAKE THE FOLLOWING CHANGES
+		LINES 38, 39 AND 40 REPLACE "/home/ehrocha/hercules/images/Z110/" WITH "/home/<your user>/MAINFRAME/"
+		LINE 115 REPLACE "0E20.2   LCS  10.0.1.20" WITH "0E20.2 3088 CTCI /dev/net/tun 1500 192.168.0.210 192.168.0.211 255.255.255.255" SUBSTITUTING YOUR OWN NETWORK SUBNETS INSTEAD OF 192.168.0
+		OPTIONAL: CNSLPORT DEFINES THE PORT TO BE USED YOU CAN CHANGE TO WHATEVER. THE CURRENT SETTING IS 23
+	
+
+STEP 6: LAUNCH ZOS
+	
+	sudo /usr/local/bin/hercules -f /home/<your user>/MAINFRAME/CONF/ADCD_LINUX.CONF
+	
+	IN A SEPERATE TERMINAL CONNECT WITH c3270
+	
+	c3270 localhost:23
+
+	NOW BACK TO THE HERCULES WINDOW AND TYPE: 
+	
+	ipl a80
+	
+	BACK TO YOUR c3270 WINDOW AND WAIT AS THE ZOS ENVIRONMENT BOOTS. IF IT LOOKS LIKE IT STALLS OR SAYS WAITING JUST WAIT FOR A BIT AND IT WILL CONTINUE ON ITS OWN. COULD TAKE 15 MINUTES OR MORE
+	ONCE ITS ALL DONE OPEN A THIRD WINDOW AND CONNECT TO 'localhost' AGAIN. THIS MIGHT LOOK LIKE THE ORIGINAL HERCULES WINDOW. IF SO JUST CLOSE THAT CONNECTION AND WAIT A BIT LONGER.
+	IT SHOULD LOOK LIKE THIS
+	
+	/===============================================================================\
+	|										|
+	| Mainframe Operating System                                      z/OS V1.10	|
+	|										|
+	|										|
+	|										|
+	|										|
+	|		DDD   U   U ZZZZZ  AAA						|
+	|		D   D U   U    Z  A   A						|
+	|		D   D U   U   Z   AAAAA						|
+	|		D   D U   U  Z    A   A						|
+	|		DDD    UUU  ZZZZZ A   A						|
+	|										|
+	|										|
+	|										|
+	|	Welcome to DUZA Mainframe System!					|
+	|										|
+	|										|
+	| TSO      - Logon to TSO/ISPF        SA       - System Automation		|
+	| CICS     - CICS System              TWS      - Workload Scheduler		|
+	| IMS      - IMS System								|
+	| 										|
+	| Enter your choice==>								|
+	| Enter one of above commands in red						|
+	|										|
+	| Your IP(               :     ), SNA LU(LCL702  )       01/17/13 03:55:47	|
+	|										|
+	\===============================================================================/
+
+
+STEP 7: LOGGING ON
+
+	AT THE "==>" PROMPT ENTER "TSO". YOULL BE ASKED FOR A USER ID ENTER "IBMUSER". YOULL THEN BE ASKED FOR THE PASSWORD ENTER "SYS1".
+	EVENTUALLY YOULL SEE 'ispf' FOLLOWED BY '***'. HIT ENTER.
+	WELCOME TO ZOS!
+
+YOU DID IT, THATS ALL THERE IS TO IT REALLY. NOW GO LEARN HOW TO INSTALL GCCMVS OR HOW TO COMPILE C PROGRAMS IN OMVS (HINT: AT THE Command ===> PROMPT TYPE "TSO OMVS" FOR SOME UNIX GOODNESS)
+
+
+**** OPTIONAL BUT RECOMMENDED ****
+
+STEP 8: GETTING NETWORKING GOING
+
+	FROM THE ISPF MENU SCREEN TYPE "3.4"
+	REPLACE "IBMUSER" WITH "DUZA" AND HIT ENTER
+	HIT PAGE DOWN AND FIND "DUZA.TCPPARMS"
+	ON THAT SAME LINE THREE CHARACTERS TO THE LEFT FROM THE LETTER "D" IN "DUZA" TYPE THE LETTER "E" AND HIT ENTER
+	ON THE FIRST BLANK LINE NEXT TO "PROFILE" TYPE THE LETTER "E" AND HIT ENTER	
+	PAGE DOWN TO LINE 90 WHICH WILL LOOK LIKE THIS:
+
+		000090 DEVICE LCS1   LCS           E20
+		000091 LINK ETH1  ETHERNET  0  LCS1
+		000092
+		000093 HOME
+		000094    10.0.1.20    ETH1
+		000095
+		000096 GATEWAY
+		000097    10.0.1.100 = ETH1 1500 HOST
+		000098
+		000099 DEFAULTNET 10.0.1.100 ETH1 1500 0
+
+	MAKE IT LOOK LIKE THIS:
+
+		000090 DEVICE CTCA1 CTC e20
+		000091 LINK CTC1 CTC 1 CTCA1
+		000092
+		000093 HOME
+		000094    192.168.0.210  CTC1
+		000095
+		000096 GATEWAY
+		000097    192.168.0.1  = CTC1 1492 HOST
+		000098
+		000099 DEFAULTNET 192.168.0.5 CTC1 1492 0
+
+	*****SPECIAL NOTE***** IF YOURE NOT ON A 192.168.0.* NETWORK JUST MATCH UP THE FIRST IP ADDRESS TO BE THE ONE YOU SET IN THE .CONF FILE. THE SECOND IS YOUR ROUTER IP ADDRESS AND THE THIRD IS THE IP ADDRESS OF THE HERCULES HOST MACHINE
+
+	WHEN DONE ON THE 'Command ===>' LINE TYPE "SAVE" AND THEN "END"
+	GO BACK TO THE OTHER c3270 WINDOW AND TYPE "STOP TCPIP" AND THEN "START TCPIP"
+
+	IN LINUX IN A NEW TERMINAL WINDOW RUN THE FOLLOWING AS ROOT:
+		echo "1"  > /proc/sys/net/ipv4/conf/all/proxy_arp 
+		echo "1"  > /proc/sys/net/ipv4/conf/all/forwarding 
+
+	THEN TRY TELNETING TO YOUR MAINFRAME: telnet 192.168.0.210 1023 (USER/PASS: IBMUSER/SYS1)
+
+STEP 9: SHUTTING IT ALL DOWN
+	
+	IN THE c3270 YOU OPENED FIRST TYPE "S SHUTSYS" AND AFTER A WHILE TYPE "Z EOD"
+	WAIT A MINUTE OR TWO
+	IN THE HERCULES WINDOWS TYPE "exit"
+	TO BOOT AGAIN FOLLOW STEP 6
+
+YOUR ALL SET NOW WELCOME TO THE WORLD OF BIG IRON.
