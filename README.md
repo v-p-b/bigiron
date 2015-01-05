@@ -1,4 +1,4 @@
 bigiron
 =======
 
-Collection of materials related to IBM z/OS
+Collection of materials related to IBM z/OS security
