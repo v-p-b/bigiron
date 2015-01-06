@@ -8,3 +8,8 @@ The goal is to collect all basic materials currently scattered over blogs, tumbl
 There is a Wiki too on the right!
 
 Under Construction :)
+
+Copyrights
+----------
+
+Since the contents are mostly archived copies from various sources I don't beleive any copyright is applicable. If you feel that I'm violating your copyrights, don't heasitate to contact me in order to resolve the issue! I definitely won't host warez and IBM property.
