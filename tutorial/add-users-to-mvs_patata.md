@@ -58,3 +58,5 @@ pe oper class(tsoauth) id(userid) access(read)
 
 At this point the new user can log on the TSO and have full rights to system datasets, JCL and SDSF.
 
+*Note:* If the TSO logon asks for an account number, give it `acct#` ;)
+
